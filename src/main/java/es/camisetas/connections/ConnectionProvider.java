@@ -1,7 +1,7 @@
 package es.camisetas.connections;
 
 import java.sql.Connection;
-import es.camisetas.excepciones.ConexionException;
+import es.camisetas.exceptions.ConexionException;
 /**
  * Único punto por el que la aplicación obtiene conexiones. Los servicios y los DAO no saben
  * si detrás hay DriverManager o un pool: siempre reciben una Connection que cierran ellos

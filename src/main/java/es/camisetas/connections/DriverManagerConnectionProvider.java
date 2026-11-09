@@ -1,6 +1,6 @@
 package es.camisetas.connections;
 
-import es.camisetas.excepciones.ConexionException;
+import es.camisetas.exceptions.ConexionException;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
