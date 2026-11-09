@@ -1,4 +1,4 @@
-package es.camisetas.excepciones;
+package es.camisetas.exceptions;
 
 
 /**

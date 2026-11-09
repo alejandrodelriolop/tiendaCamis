@@ -1,4 +1,4 @@
-package es.camisetas.excepciones;
+package es.camisetas.exceptions;
 
 /**
  * Situación de negocio prevista (falta de stock, cancelación duplicada...). No es un fallo

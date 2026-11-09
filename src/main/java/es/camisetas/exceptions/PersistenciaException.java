@@ -1,4 +1,4 @@
-package es.camisetas.excepciones;
+package es.camisetas.exceptions;
 
 import es.camisetas.utilidades.DatabaseUtils;
 import java.sql.SQLException;
