@@ -1,0 +1,31 @@
+# ---------------------------------------------------------------------------
+# Configuración de la tienda de camisetas.
+# Copia este fichero a "application.properties" (que está en .gitignore)
+# y rellena las credenciales reales SOLO en esa copia local.
+# ---------------------------------------------------------------------------
+
+# Gestor de base de datos: MYSQL | H2
+database.engine=H2
+# Cómo se obtienen las conexiones: DRIVER_MANAGER | POOL (HikariCP)
+connection.mode=DRIVER_MANAGER
+
+# Simulación: NORMAL | FALLO_TRANSACCION (provoca un fallo controlado y verifica el rollback)
+simulation.mode=NORMAL
+
+# --- H2 (embebido, no necesita instalación) ---
+# En memoria; DB_CLOSE_DELAY=-1 mantiene la BD viva mientras viva la JVM.
+h2.url=jdbc:h2:mem:unidad2;DB_CLOSE_DELAY=-1
+h2.user=sa
+h2.password=
+
+# --- MySQL (servidor independiente) ---
+# createDatabaseIfNotExist crea la base "unidad2" si todavía no existe.
+mysql.url=jdbc:mysql://localhost:3306/tiendaCamis?createDatabaseIfNotExist=true&serverTimezone=Europe/Madrid&allowPublicKeyRetrieval=true&useSSL=false
+mysql.user=root
+
+mysql.password= tupassword
+
+# --- Parámetros mínimos del pool HikariCP (solo en connection.mode=POOL) ---
+pool.maximumPoolSize=5
+pool.minimumIdle=1
+pool.connectionTimeoutMs=10000
