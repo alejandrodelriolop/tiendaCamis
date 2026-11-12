@@ -5,6 +5,7 @@ import es.camisetas.exceptions.ConfiguracionException;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
@@ -23,7 +24,8 @@ public record Configuracion(
         String password,
         int poolMaximo,
         int poolMinimoInactivo,
-        long poolTimeoutMs) {
+        long poolTimeoutMs,
+        boolean interactivo) {
 
     public static final String PROPIEDAD_RUTA = "app.config";
     public static final String FICHERO_POR_DEFECTO = "application.properties";
@@ -71,13 +73,26 @@ public record Configuracion(
         if (minimo > maximo) {
             throw new ConfiguracionException("pool.minimumIdle (" + minimo + ") no puede superar pool.maximumPoolSize (" + maximo + ")");
         }
-        return new Configuracion(gestor, modo, simulacion, url, usuario, password, maximo, minimo, timeout);
+        boolean interactivo = leerBooleano(props, "app.interactive", true);
+        return new Configuracion(gestor, modo, simulacion, url, usuario, password, maximo, minimo, timeout, interactivo);
     }
 
     /** Configuración H2 en memoria para pruebas: cada nombre de base de datos es independiente. */
     public static Configuracion paraPruebas(String nombreBd, ModoConexion modo) {
         return new Configuracion(GestorDB.H2, modo, ModoSimulacion.NORMAL,
-                "jdbc:h2:mem:" + nombreBd + ";DB_CLOSE_DELAY=-1", "sa", "", 3, 1, 10_000);
+                "jdbc:h2:mem:" + nombreBd + ";DB_CLOSE_DELAY=-1", "sa", "", 3, 1, 10_000, false);
+    }
+
+    private static boolean leerBooleano(Properties props, String clave, boolean porDefecto) {
+        String valor = props.getProperty(clave);
+        if (valor == null || valor.isBlank()) {
+            return porDefecto;
+        }
+        return switch (valor.trim().toLowerCase(Locale.ROOT)) {
+            case "true" -> true;
+            case "false" -> false;
+            default -> throw new ConfiguracionException("La propiedad '" + clave + "' debe ser true o false: " + valor);
+        };
     }
 
     private static String obligatoria(Properties props, String clave) {
@@ -124,6 +139,7 @@ public record Configuracion(
     @Override
     public String toString() {
         return "Configuracion[gestor=" + gestor + ", conexiones=" + modoConexion
-                + ", simulacion=" + modoSimulacion + ", url=" + url + ", usuario=" + usuario + "]";
+                + ", simulacion=" + modoSimulacion + ", interactivo=" + interactivo
+                + ", url=" + url + ", usuario=" + usuario + "]";
     }
 }
