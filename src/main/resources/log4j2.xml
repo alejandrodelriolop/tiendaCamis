@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Properties>
+        <Property name="patron">%d{dd/MM/yyyy HH:mm:ss.SSS} %-5level %c{1} - %msg%n</Property>
+    </Properties>
+
+    <Appenders>
+        <!-- Solo avisos y errores por la salida de error; la salida normal queda para la simulación -->
+        <Console name="Consola" target="SYSTEM_ERR">
+            <ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${patron}" charset="UTF-8"/>
+        </Console>
+
+        <!-- Log técnico activo con rotación por tamaño, compresión .gz y máximo de históricos -->
+        <RollingFile name="Runtime"
+                     fileName="logs/runtime/aplicacion.log"
+                     filePattern="logs/runtime/aplicacion-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="${patron}" charset="UTF-8"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 KB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="5"/>
+        </RollingFile>
+
+        <!-- Evidencia independiente por ejecución: el nombre lleva la fecha y hora de arranque -->
+        <File name="Evidencia"
+              fileName="logs/evidencias/ejecucion_${date:dd-MM-yyyy_HH-mm-ss}.log"
+              append="false">
+            <PatternLayout pattern="${patron}" charset="UTF-8"/>
+        </File>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="com.zaxxer.hikari" level="INFO"/>
+        <Logger name="com.mysql" level="WARN"/>
+        <Root level="DEBUG">
+            <AppenderRef ref="Consola"/>
+            <AppenderRef ref="Runtime"/>
+            <AppenderRef ref="Evidencia"/>
+        </Root>
+    </Loggers>
+</Configuration>
