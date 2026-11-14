@@ -18,7 +18,7 @@ y obtiene conexiones con **DriverManager o HikariCP**; cambiar de gestor o de fo
 
 ## Modelo de datos (13 tablas)
 
-Diagrama completo: [`docs/modelo-er.png`](docs/modelo-er.png) (fuente editable: [`docs/docs/modelo-er.mmd`](docs/docs/modelo-er.mmd)).
+Diagrama completo: [`docs/modelo-er.png`](docs/modelo-er.png) (fuente editable: [`docs/modelo-er.mmd`](docs/modelo-er.mmd)).
 
 ![Modelo entidad-relación](docs/docs/modelo-er.png)
 
