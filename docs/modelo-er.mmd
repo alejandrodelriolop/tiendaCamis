@@ -1,0 +1,85 @@
+erDiagram
+    EQUIPO     ||--o{ CAMISETA : "1:N viste"
+    ERA        ||--o{ CAMISETA : "1:N pertenece"
+    JUGADOR    |o--o{ CAMISETA : "1:N estampa"
+    CAMISETA   ||--o{ CAMISETA_CATEGORIA : "N:M"
+    CATEGORIA  ||--o{ CAMISETA_CATEGORIA : "N:M"
+    CAMISETA   ||--|| INVENTARIO : "1:1 existencias"
+    CAMISETA   ||--o{ MOVIMIENTO_STOCK : "1:N explica"
+    CLIENTE    ||--o{ DIRECCION : "1:N tiene"
+    CLIENTE    ||--o{ PEDIDO : "1:N realiza"
+    DIRECCION  ||--o{ PEDIDO : "1:N envío"
+    PEDIDO     ||--|{ LINEA_PEDIDO : "1:N detalle"
+    CAMISETA   ||--o{ LINEA_PEDIDO : "1:N se vende"
+    PEDIDO     ||--o{ MOVIMIENTO_STOCK : "1:N origina"
+    PEDIDO     ||--o| PAGO : "1:1 se paga"
+
+    EQUIPO { bigint id PK
+        varchar nombre UK
+        varchar pais
+        varchar liga }
+    ERA { bigint id PK
+        varchar nombre UK
+        int anio_inicio
+        int anio_fin "null = era abierta" }
+    JUGADOR { bigint id PK
+        varchar nombre UK
+        varchar pais
+        varchar posicion }
+    CATEGORIA { bigint id PK
+        varchar nombre UK
+        varchar descripcion }
+    CAMISETA { bigint id PK
+        varchar sku UK
+        varchar nombre
+        bigint equipo_id FK
+        bigint era_id FK
+        bigint jugador_id FK "nullable"
+        int dorsal "1-99"
+        varchar temporada
+        varchar equipacion "LOCAL VISITANTE TERCERA PORTERO"
+        varchar edicion "REPLICA JUGADOR RETRO COLECCIONISTA"
+        decimal precio "mayor que 0"
+        boolean activa
+        boolean control_stock }
+    CAMISETA_CATEGORIA { bigint camiseta_id PK,FK
+        bigint categoria_id PK,FK }
+    INVENTARIO { bigint camiseta_id PK,FK
+        int stock "mayor o igual 0"
+        int umbral_reposicion }
+    MOVIMIENTO_STOCK { bigint id PK
+        bigint camiseta_id FK
+        bigint pedido_id FK "nullable"
+        varchar tipo "ENTRADA_REPOSICION SALIDA_PEDIDO ENTRADA_CANCELACION"
+        int cantidad
+        timestamp fecha
+        varchar motivo }
+    CLIENTE { bigint id PK
+        varchar nombre
+        varchar email UK
+        date fecha_alta }
+    DIRECCION { bigint id PK
+        bigint cliente_id FK
+        varchar calle
+        varchar ciudad
+        varchar codigo_postal
+        varchar pais
+        boolean principal }
+    PEDIDO { bigint id PK
+        bigint cliente_id FK
+        bigint direccion_id FK
+        timestamp fecha
+        varchar estado "PENDIENTE PAGADO CANCELADO"
+        decimal total }
+    LINEA_PEDIDO { bigint id PK
+        bigint pedido_id FK
+        bigint camiseta_id FK
+        int cantidad
+        decimal precio_unitario "precio aplicado al comprar"
+        decimal importe }
+    PAGO { bigint id PK
+        bigint pedido_id FK,UK
+        varchar metodo
+        varchar estado "COMPLETADO REEMBOLSADO"
+        decimal importe
+        timestamp fecha }
