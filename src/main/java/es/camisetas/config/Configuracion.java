@@ -10,6 +10,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Properties;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * Configuración de la aplicación leída de application.properties.
@@ -76,11 +78,42 @@ public record Configuracion(
         boolean interactivo = leerBooleano(props, "app.interactive", true);
         return new Configuracion(gestor, modo, simulacion, url, usuario, password, maximo, minimo, timeout, interactivo);
     }
+    public static Configuracion paraPruebas(GestorDB gestor, String nombreBd, ModoConexion modo) {
+        if (gestor == GestorDB.H2) {
+            return new Configuracion(
+                    gestor,
+                    modo,
+                    ModoSimulacion.NORMAL,
+                    "jdbc:h2:mem:" + nombreBd + ";DB_CLOSE_DELAY=-1",
+                    "sa",
+                    "",
+                    5,
+                    1,
+                    10000,
+                    false
+            );
+        }
 
-    /** Configuración H2 en memoria para pruebas: cada nombre de base de datos es independiente. */
-    public static Configuracion paraPruebas(String nombreBd, ModoConexion modo) {
-        return new Configuracion(GestorDB.H2, modo, ModoSimulacion.NORMAL,
-                "jdbc:h2:mem:" + nombreBd + ";DB_CLOSE_DELAY=-1", "sa", "", 3, 1, 10_000, false);
+        Properties properties = new Properties();
+
+        try (var reader = Files.newBufferedReader(Path.of("application.properties"))) {
+            properties.load(reader);
+        } catch (IOException e) {
+            throw new IllegalStateException("Error al cargar la configuración", e);
+        }
+
+        return new Configuracion(
+                gestor,
+                modo,
+                ModoSimulacion.NORMAL,
+                properties.getProperty("mysql.url"),
+                properties.getProperty("mysql.user"),
+                properties.getProperty("mysql.password"),
+                5,
+                1,
+                10000,
+                false
+        );
     }
 
     private static boolean leerBooleano(Properties props, String clave, boolean porDefecto) {
